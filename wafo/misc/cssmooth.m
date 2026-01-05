@@ -71,7 +71,7 @@ if nargin<3 || isempty(p)
 else
   p = min(p,1);
 end
-if (nargin<5)||(isempty(LinExtrap)),
+if (nargin<5)||(isempty(LinExtrap))
   LinExtrap=0; %do not force linear extrapolation in the ends (default)
 end
 
@@ -85,7 +85,7 @@ else
 end
 n = length(xi);
 
-if nargin<6||isempty(d2), 
+if nargin<6||isempty(d2) 
   d2 = ones(n,1); 
  % d2 = ([dx;10]+[10;dx])./2;
 elseif length(d2) == 1
@@ -113,11 +113,11 @@ nd = prod(szy(1:end-1));
 ny = szy(end);
 
 
-if n<2,
+if n<2
    error('There must be >=2 data points.')
-elseif any(dx<=0),
+elseif any(dx<=0)
    error('Two consecutive values in x can not be equal.')
-elseif n~=ny,
+elseif n~=ny
    error('x and y must have the same length.')
 end
 
@@ -133,12 +133,12 @@ dydx = diff(yi)./dx(:,idx);
 if (n==2)  % straight line
   coefs=[dydx(:) yi(1,:).'];
 else
-  if LinExtrap==2 && n==3,
+  if LinExtrap==2 && n==3
     p = 0;  % Force LS-fit
   end
   dx1=1./dx;
-  
-  u = computeU();
+  D = spdiags(d2,0,n,n);  % The variance
+  u = computeU(D);
   
   zrs = zeros(1,nd);
   if p<1
@@ -156,7 +156,7 @@ else
   ci = [zrs;3*p*u];
    
 
-  if LinExtrap==2 && p~=0 && n>3, %Forcing linear extrapolation in the ends 
+  if LinExtrap==2 && p~=0 && n>3 %Forcing linear extrapolation in the ends 
     ci([2,  end],:) = 0;
     % New call
     % fixing the coefficients so that we have continous
@@ -193,20 +193,20 @@ if ~any(LinExtrap==[0 2])
 end
 
 
-if (nargin<4)||(isempty(xx)),
+if (nargin<4)||(isempty(xx))
   yy = pp;
 else
   yy = ppval(pp,xx);
 end
 
 %% Nested functions
-  function u = computeU()
+  function u = computeU(D)
     if isempty(p) || p~=0
       R = spdiags([dx(2:n-1) 2*(dx(1:n-2)+dx(2:n-1)) dx(1:n-2)],-1:1,n-2,n-2);
     end
     if isempty(p) || p<1
       Q = spdiags([dx1(1:n-2) -(dx1(1:n-2)+dx1(2:n-1)) dx1(2:n-1)],0:-1:-2,n,n-2);
-      D = spdiags(d2,0,n,n);  % The variance
+      
       QDQ = Q.'*D*Q;
       if isempty(p) || p<0
         % Crude estimate

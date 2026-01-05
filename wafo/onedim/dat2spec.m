@@ -115,7 +115,7 @@ function [S,fcut] = dat2spec(xn,varargin)
 
 % Initialize constants 
 %~~~~~~~~~~~~~~~~~~~~~
-nugget   = 0; %10^-12;
+nugget   = 10^-12;
 rate     = 2; % interpolationrate for frequency
 tapery   = 0; % taper the data before the analysis
 wdef     = 1; % 1=parzen window 2=hanning window, 3= bartlett window
@@ -289,12 +289,12 @@ switch lower(method)
   case {'psd','psdo'} % from signal toolbox
     noverlap   = 0;
     if method(end)=='o',
-      noverlap   = floor(L/2);
+      noverlap = L;
     end
     S.noverlap = noverlap;
     if 1,
       vararg = cell(1,3*~isempty(p));
-      [Rper vararg{:}]=welch_psd(yy(:,2:m),'nfft',nfft,'window',win,'overlap',noverlap,'p',p,'dflag',dflag);
+      [Rper vararg{:}]=welch_psd(yy(:,2:m),'nfft',nfft,'window',win,'overlap',noverlap,'p',p,'dflag',dflag, 'Fs', 0.5/dT);
       if m>2
         Rper = mean(Rper,2);
       end

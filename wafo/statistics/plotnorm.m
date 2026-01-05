@@ -78,10 +78,6 @@ SXX=sum((linregx-mean(linregx)).^2);
 Phi1=0.5*(1+erf(1/sqrt(2)));
 lambda975=sqrt(2)*erfinv(2*(.975)-1);
 
-levels=[ .5 .7 .9 .95 .98 .99 .995 .999 .9999];
-levels=[1-fliplr(levels(2:9)) levels];
-lev=sqrt(2)*erfinv(2*levels-1); 
-
 data=zeros(2,m);
 mx=zeros(1,m);
 sx=zeros(1,m);
@@ -115,6 +111,10 @@ else
 end
 
 if nr2
+  levels=[ .5 .7 .9 .95 .98 .99 .995 .999 .9999];
+  levels=[1-fliplr(levels(2:9)) levels];
+  lev=sqrt(2)*erfinv(2*levels-1); 
+
   ax=axis;
   plot([ax(1) ax(2)],[lev; lev],'k');
   for l=1:length(levels)
